@@ -11,10 +11,6 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@atlascluster.pji2ttt.mongodb.net/?retryWrites=true&w=majority`;
 
-// const uri = "mongodb+srv://redux:vbaOlsG4rDx5WOqk@atlascluster.pji2ttt.mongodb.net/tech-net?retryWrites=true&w=majority";
-
-// const uri = "mongodb+srv://redux:vbaOlsG4rDx5WOqk@atlascluster.pji2ttt.mongodb.net/?retryWrites=true&w=majority";
-
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -88,6 +84,25 @@ const run = async () => {
       } else {
         res.status(404).json({ error: "Product not found" });
       }
+    });
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+
+      const result = await userCollection.insertOne(user);
+
+      res.send(result);
+    });
+
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+
+      const result = await userCollection.findOne({ email });
+
+      if (result?.email) {
+        return res.send({ status: true, data: result });
+      }
+
+      res.send({ status: false });
     });
   } finally {
   }
